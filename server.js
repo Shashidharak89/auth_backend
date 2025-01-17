@@ -7,16 +7,20 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const mongo_url=process.env.MONGO_URL;
-const port=process.env.PORT || 5001;
+// Get MongoDB connection URL and port from environment variables
+const mongo_url = process.env.MONGO_URL;
+const port = process.env.PORT || 5001;
 
 // Initializing Express app
 const app = express();
+
+// Enable CORS for all routes
 app.use(cors());
-// Middleware to receive JSON
+
+// Middleware to parse incoming requests with JSON payloads
 app.use(express.json());
 
-// Adding the API end-points and the route handlers
+// Adding the API endpoints and route handlers
 app.use("/api/posts", postsRoutes);
 app.use("/api/users", usersRoutes);
 
@@ -24,9 +28,9 @@ app.use("/api/users", usersRoutes);
 mongoose
   .connect(mongo_url, { dbName: "demo_db" })
   .then(() => {
-    console.log("connected to DB successfully");
-    
+    console.log("Connected to DB successfully");
+
     // Listening to requests if DB connection is successful
-    app.listen(port, "localhost", () => console.log(`Listesning on :${port}`));
+    app.listen(port, "0.0.0.0", () => console.log(`Listening on port: ${port}`));
   })
-  .catch((err) => console.log(err));
+  .catch((err) => console.error("Error connecting to DB:", err));
