@@ -27,6 +27,6 @@ mongoose
     console.log("connected to DB successfully");
     
     // Listening to requests if DB connection is successful
-    app.listen(PORT, "localhost", () => console.log("Listening to port ",PORT));
+    app.listen(port, "localhost", () => console.log("Listening to port ",port));
   })
   .catch((err) => console.log(err));
