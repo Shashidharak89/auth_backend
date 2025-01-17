@@ -4,10 +4,11 @@ import User from "../models/UserModel.js";
 
 /************************************ Get All Posts ************************************/
 const getPosts = async (req, res) => {
+  const text="You Can Login now";
   try {
     // Grab all the posts from DB
     const posts = await Post.find().sort({ createdAt: "desc" });
-    res.status(200).json({ posts });
+    res.status(200).json({ posts ,text:text});
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -17,11 +18,13 @@ const getPosts = async (req, res) => {
 const getUserPosts = async (req, res) => {
   // Grab the authenticated user from request object
   const user = await User.findById(req.user._id);
-
+  
   try {
     // Grab user's posts from DB
     const userPosts = await Post.find({ user: user._id }).sort({ createdAt: "desc" });
     res.status(200).json({ userPosts, email: user.email });
+
+    
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -112,4 +115,22 @@ const updatePost = async (req, res) => {
   }
 };
 
-export { getPosts, getUserPosts, addPost, deletePost, updatePost };
+
+
+
+const getSomething = async (req, res) => {
+  // Grab the authenticated user from request object
+  const text="You can login now";
+
+  try {
+    // Grab user's posts from DB
+   
+    res.send(text);
+
+    
+  } catch (error) {
+    res.send("you cannot login now");
+  }
+};
+
+export { getPosts, getUserPosts, addPost, deletePost, updatePost, getSomething };
