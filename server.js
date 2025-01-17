@@ -8,7 +8,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const mongo_url=process.env.MONGO_URL;
-const port=process.env.PORT;
+const port=process.env.PORT || 4000;
 
 // Initializing Express app
 const app = express();
@@ -27,6 +27,6 @@ mongoose
     console.log("connected to DB successfully");
     
     // Listening to requests if DB connection is successful
-    app.listen(port, "localhost", () => console.log("Listening to port ",port));
+    app.listen(port, "localhost", () => console.log(`Listesning on :${port}`));
   })
   .catch((err) => console.log(err));
