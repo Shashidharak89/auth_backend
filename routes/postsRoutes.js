@@ -5,6 +5,7 @@ import {
   addPost,
   deletePost,
   updatePost,
+  getSomething,
 } from "../controllers/postsController.js";
 import auth from "../middlewares/auth.js";
 
@@ -13,6 +14,7 @@ const router = express.Router();
 
 // Get all posts route
 router.get("/", getPosts);
+
 
 // Get user's posts route
 router.get("/user", auth, getUserPosts);
@@ -25,5 +27,7 @@ router.delete("/:id", auth, deletePost);
 
 // Update post route
 router.put("/:id", auth, updatePost);
+
+router.get("/getone", auth,getSomething);
 
 export { router as postsRoutes };
