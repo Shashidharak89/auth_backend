@@ -8,7 +8,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const mongo_url=process.env.MONGO_URL;
-port=process.env.PORT;
+const port=process.env.PORT;
 
 // Initializing Express app
 const app = express();
