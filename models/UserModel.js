@@ -3,6 +3,10 @@ import mongoose from "mongoose";
 // Creating post schema using Mongoose Schema class
 const UserSchema = new mongoose.Schema(
   {
+    name:{
+      type:String,
+      default:"User",
+    },
     email: {
       type: String,
       required: true,
