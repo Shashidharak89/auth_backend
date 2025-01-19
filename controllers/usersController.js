@@ -76,4 +76,48 @@ const loginUser = async (req, res) => {
   }
 };
 
-export { registerUser, loginUser };
+
+
+// ***************************************Verify jwt tocken**********************************************
+
+const verifyUser = async (req, res) => {
+  const token = req.query.token; // Extract the token from query parameters
+
+  if (!token) {
+    return res.status(400).json({ message: "Token is required" });
+  }
+
+  try {
+    // Verify the token
+    const decoded = jwt.verify(token, process.env.SECRET);
+    const userId = decoded._id;
+
+    // Find the user in the database
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Send user details if token is valid
+    return res.status(200).json({
+      message: "Token is valid",
+      user: {
+        coins: user.coins,
+        name: user.name,
+        email: user.email,
+      },
+    });
+  } catch (error) {
+    // Handle invalid or expired tokens
+    return res.status(401).json({ message: "Invalid or expired token" });
+  }
+};
+
+
+
+
+
+
+
+export { registerUser, loginUser,verifyUser };
