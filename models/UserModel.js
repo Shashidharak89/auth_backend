@@ -19,6 +19,10 @@ const UserSchema = new mongoose.Schema(
     coins:{
       type:Number,
       default:200,
+    },
+    checkin:{
+      type:Boolean,
+      default:false,
     }
   },
   { timestamps: true }
