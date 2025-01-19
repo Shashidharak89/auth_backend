@@ -23,6 +23,12 @@ app.use(express.json());
 // Adding the API endpoints and route handlers
 app.use("/api/posts", postsRoutes);
 app.use("/api/users", usersRoutes);
+app.get('*',(req,res)=>{
+res.sendFile(Path2D.join(__dirname,'build','index.html'));
+});
+
+
+
 
 // Connecting to MongoDB using Mongoose
 mongoose
