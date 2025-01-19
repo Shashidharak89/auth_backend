@@ -4,6 +4,9 @@ import { postsRoutes } from "./routes/postsRoutes.js";
 import { usersRoutes } from "./routes/usersRoutes.js";
 import cors from "cors";
 import dotenv from 'dotenv';
+import path from 'path';
+
+
 
 dotenv.config();
 
@@ -14,6 +17,8 @@ const port = process.env.PORT || 5001;
 // Initializing Express app
 const app = express();
 
+
+app.use(express.static(path.join(__dirname, 'dist'))); // Adjust 'dist' to your Vite build output folder
 // Enable CORS for all routes
 app.use(cors());
 
@@ -23,8 +28,9 @@ app.use(express.json());
 // Adding the API endpoints and route handlers
 app.use("/api/posts", postsRoutes);
 app.use("/api/users", usersRoutes);
-app.get('*',(req,res)=>{
-res.sendFile(Path2D.join(__dirname,'build','index.html'));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 
