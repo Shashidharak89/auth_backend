@@ -116,8 +116,34 @@ const verifyUser = async (req, res) => {
 
 
 
+const updateCoin=async (req, res) => {
+  try {
+    const { email, amount } = req.body; // Email to identify user, amount to add to coins
+
+    if (!email || typeof amount !== 'number') {
+      return res.status(400).json({ error: 'Invalid email or amount' });
+    }
+
+    // Find user and update coins
+    const updatedUser = await User.findOneAndUpdate(
+      { email },
+      { $inc: { coins: amount } }, // Increment coins by the amount
+      { new: true } // Return the updated document
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.status(200).json({ message: 'Coins updated successfully', coins: updatedUser.coins });
+  } catch (error) {
+    res.status(500).json({ error: 'Server error', details: error.message });
+  }
+};
 
 
 
 
-export { registerUser, loginUser,verifyUser };
+
+
+export { registerUser, loginUser,verifyUser,updateCoin };
