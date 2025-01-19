@@ -5,8 +5,7 @@ import { usersRoutes } from "./routes/usersRoutes.js";
 import cors from "cors";
 import dotenv from 'dotenv';
 import path from 'path';
-
-
+import { fileURLToPath } from 'url'; // Import to create __dirname equivalent
 
 dotenv.config();
 
@@ -14,11 +13,16 @@ dotenv.config();
 const mongo_url = process.env.MONGO_URL;
 const port = process.env.PORT || 5001;
 
+// Create __dirname equivalent
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 // Initializing Express app
 const app = express();
 
+// Serve static files from the Vite build output folder
+app.use(express.static(path.join(__dirname, 'dist')));
 
-app.use(express.static(path.join(__dirname, 'dist'))); // Adjust 'dist' to your Vite build output folder
 // Enable CORS for all routes
 app.use(cors());
 
@@ -29,12 +33,10 @@ app.use(express.json());
 app.use("/api/posts", postsRoutes);
 app.use("/api/users", usersRoutes);
 
+// Fallback route to serve the React app
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
-
-
-
 
 // Connecting to MongoDB using Mongoose
 mongoose
@@ -42,7 +44,7 @@ mongoose
   .then(() => {
     console.log("Connected to DB successfully");
 
-    // Listening to requests if DB connection is successful
+    // Start the server only if the DB connection is successful
     app.listen(port, "0.0.0.0", () => console.log(`Listening on port: ${port}`));
   })
   .catch((err) => console.error("Error connecting to DB:", err));
