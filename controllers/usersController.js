@@ -2,6 +2,7 @@ import User from "../models/UserModel.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import "dotenv/config.js";
+import cron from 'node-cron';
 
 /************************************ Creating JWT token ************************************/
 const createToken = (_id) => {
@@ -143,7 +144,70 @@ const updateCoin=async (req, res) => {
 
 
 
+// *************************************CheckIn********************************************8
+
+// Daily check-in route handler
+const dailyCheckIn = async (req, res) => {
+  const { email } = req.body;
+
+  // Check if the email is provided
+  if (!email) {
+    return res.status(400).json({ message: 'Email is required' });
+  }
+
+  try {
+    // Find the user by email
+    const user = await User.findOne({ email });
+
+    // If user does not exist, return an error
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Check if the user has already checked in
+    if (user.checkin) {
+      return res.status(400).json({ message: 'You have already checked in today!' });
+    }
+
+    // Update the user's coins and set isCheckIn to true
+    user.coins += 100;
+    user.checkin = true;
+
+    // Save the updated user data
+    await user.save();
+
+    // Send a success response
+    res.status(200).json({ 
+      message: 'Check-in successful! 100 coins added.', 
+      coins: user.coins 
+    });
+  } catch (error) {
+    console.error('Error during daily check-in:', error);
+    res.status(500).json({ message: 'An error occurred while processing your check-in' });
+  }
+};
+
+// **************************Shedule auto reset********************************
+
+const resetCheckInStatus = async () => {
+  try {
+    // Update all users to set checkin to false
+    await User.updateMany({}, { $set: { checkin: false } });
+    console.log('Check-in status reset for all users at midnight.');
+  } catch (error) {
+    console.error('Error resetting check-in status:', error);
+  }
+};
+
+// Schedule the reset function to run at 12:00 AM every day
+cron.schedule('0 0 * * *', resetCheckInStatus);
+
+console.log('Daily reset scheduled at midnight.');
 
 
 
-export { registerUser, loginUser,verifyUser,updateCoin };
+
+
+
+
+export { registerUser, loginUser,verifyUser,updateCoin,dailyCheckIn };
