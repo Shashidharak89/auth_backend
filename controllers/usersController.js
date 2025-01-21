@@ -36,8 +36,9 @@ const registerUser = async (req, res) => {
     // Create the JsonWebToken
     const token = createToken(user._id)
     let coins=user.coins;
+    let checkin=user.checkin;
     // Send the response
-    res.status(200).json({ email, token,coins });
+    res.status(200).json({ email, token,coins,checkin });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -60,6 +61,7 @@ const loginUser = async (req, res) => {
   }
 
   let coins=user.coins;
+  let checkin=user.checkin;
 
   // Check password
   const match = await bcrypt.compare(password, user.password);
@@ -71,7 +73,7 @@ const loginUser = async (req, res) => {
     // Create the JsonWebToken
     const token = createToken(user._id)
 
-    res.status(200).json({ email, token,coins });
+    res.status(200).json({ email, token,coins,checkin });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -107,6 +109,8 @@ const verifyUser = async (req, res) => {
         coins: user.coins,
         name: user.name,
         email: user.email,
+        checkin:user.checkin,
+       
       },
     });
   } catch (error) {
@@ -179,7 +183,9 @@ const dailyCheckIn = async (req, res) => {
     // Send a success response
     res.status(200).json({ 
       message: 'Check-in successful! 100 coins added.', 
-      coins: user.coins 
+      coins: user.coins ,
+      checkin:user.checkin
+      
     });
   } catch (error) {
     console.error('Error during daily check-in:', error);
