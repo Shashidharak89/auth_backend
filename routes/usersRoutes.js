@@ -1,5 +1,5 @@
 import express from 'express'
-import { registerUser, loginUser,verifyUser,updateCoin } from '../controllers/usersController.js'
+import { registerUser, loginUser,verifyUser,updateCoin,dailyCheckIn } from '../controllers/usersController.js'
 
 // Creating an instance of Express router
 const router = express.Router()
@@ -13,6 +13,8 @@ router.post('/login', loginUser)
 router.get('/verifyuser', verifyUser)
 
 router.put('/update-coin',updateCoin)
+
+router.post('/checkin',dailyCheckIn)
 
 
 export { router as usersRoutes }
