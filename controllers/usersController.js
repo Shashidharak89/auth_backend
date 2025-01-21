@@ -35,10 +35,13 @@ const registerUser = async (req, res) => {
     const user = await User.create({ email, password: hashed });
     // Create the JsonWebToken
     const token = createToken(user._id)
-    let coins=user.coins;
-    let checkin=user.checkin;
+    let coins = user.coins;
+    let checkin = user.checkin;
+    let name=user.name;
+    let createdAt=user.createdAt;
+    let updatedAt=user.updatedAt;
     // Send the response
-    res.status(200).json({ email, token,coins,checkin });
+    res.status(200).json({ email, token, coins, checkin,name ,createdAt,updatedAt});
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -60,9 +63,11 @@ const loginUser = async (req, res) => {
     return res.status(400).json({ error: "Incorrect email." });
   }
 
-  let coins=user.coins;
-  let checkin=user.checkin;
-
+  let coins = user.coins;
+  let checkin = user.checkin;
+  let name = user.name;
+  let createdAt=user.createdAt;
+  let updatedAt=user.updatedAt;
   // Check password
   const match = await bcrypt.compare(password, user.password);
   if (!match) {
@@ -73,7 +78,7 @@ const loginUser = async (req, res) => {
     // Create the JsonWebToken
     const token = createToken(user._id)
 
-    res.status(200).json({ email, token,coins,checkin });
+    res.status(200).json({  token, coins, checkin, name,createdAt,updatedAt });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -109,8 +114,10 @@ const verifyUser = async (req, res) => {
         coins: user.coins,
         name: user.name,
         email: user.email,
-        checkin:user.checkin,
-       
+        checkin: user.checkin,
+        createdAt:user.createdAt,
+        updatedAt:user.updatedAt,
+
       },
     });
   } catch (error) {
@@ -121,7 +128,7 @@ const verifyUser = async (req, res) => {
 
 
 
-const updateCoin=async (req, res) => {
+const updateCoin = async (req, res) => {
   try {
     const { email, amount } = req.body; // Email to identify user, amount to add to coins
 
@@ -181,11 +188,11 @@ const dailyCheckIn = async (req, res) => {
     await user.save();
 
     // Send a success response
-    res.status(200).json({ 
-      message: 'Check-in successful! 100 coins added.', 
-      coins: user.coins ,
-      checkin:user.checkin
-      
+    res.status(200).json({
+      message: 'Check-in successful! 100 coins added.',
+      coins: user.coins,
+      checkin: user.checkin
+
     });
   } catch (error) {
     console.error('Error during daily check-in:', error);
@@ -216,4 +223,4 @@ console.log('Daily reset scheduled at midnight.');
 
 
 
-export { registerUser, loginUser,verifyUser,updateCoin,dailyCheckIn };
+export { registerUser, loginUser, verifyUser, updateCoin, dailyCheckIn };
