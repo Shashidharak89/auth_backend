@@ -52,37 +52,53 @@ const loginUser = async (req, res) => {
   // Grab data from request body
   const { email, password } = req.body;
 
-  // Check the fields are not empty
+  // Check that fields are not empty
   if (!email || !password) {
     return res.status(400).json({ error: "All fields are required." });
   }
 
-  // Check if email already exist
-  const user = await User.findOne({ email });
-  if (!user) {
-    return res.status(400).json({ error: "Incorrect email." });
-  }
-
-  let coins = user.coins;
-  let checkin = user.checkin;
-  let name = user.name;
-  let createdAt=user.createdAt;
-  let updatedAt=user.updatedAt;
-  // Check password
-  const match = await bcrypt.compare(password, user.password);
-  if (!match) {
-    return res.status(400).json({ error: "Incorrect password." });
-  }
-
   try {
-    // Create the JsonWebToken
-    const token = createToken(user._id)
+    // Check if email already exists
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ error: "Incorrect email." });
+    }
 
-    res.status(200).json({  token, coins, checkin, name,createdAt,updatedAt });
+    // Check password
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) {
+      return res.status(400).json({ error: "Incorrect password." });
+    }
+
+    // Get today's date at midnight
+    const currentDate = new Date().setHours(0, 0, 0, 0);
+    const lastCheckinDate = user.lastcheckin
+      ? new Date(user.lastcheckin).setHours(0, 0, 0, 0)
+      : null;
+
+    // Reset checkin to false if lastcheckin is different from today's date
+    if (lastCheckinDate === null || currentDate > lastCheckinDate) {
+      user.checkin = false; // Reset checkin
+      await user.save();    // Save changes to the database
+    }
+
+    // Create the JsonWebToken
+    const token = createToken(user._id);
+
+    // Prepare the response
+    res.status(200).json({
+      token,
+      coins: user.coins,
+      checkin: user.checkin,
+      name: user.name,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 
 
