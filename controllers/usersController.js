@@ -175,47 +175,34 @@ const dailyCheckIn = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Check if the user has already checked in
-    if (user.checkin) {
+    // Get the current date at midnight for comparison (ignores time)
+    const currentDate = new Date().setHours(0, 0, 0, 0);
+
+    // If the user has not checked in before, or last check-in date is earlier than today
+    if (user.lastcheckin === null || new Date(user.lastcheckin).setHours(0, 0, 0, 0) < currentDate) {
+      // Add coins and update check-in status
+      user.coins += 100;
+      user.checkin = true;
+      user.lastcheckin = new Date();  // Update last check-in to current date
+
+      // Save the updated user data
+      await user.save();
+
+      // Send a success response
+      res.status(200).json({
+        message: 'Check-in successful! 100 coins added.',
+        coins: user.coins,
+        checkin: user.checkin,
+      });
+    } else {
       return res.status(400).json({ message: 'You have already checked in today!' });
     }
 
-    // Update the user's coins and set isCheckIn to true
-    user.coins += 100;
-    user.checkin = true;
-
-    // Save the updated user data
-    await user.save();
-
-    // Send a success response
-    res.status(200).json({
-      message: 'Check-in successful! 100 coins added.',
-      coins: user.coins,
-      checkin: user.checkin
-
-    });
   } catch (error) {
     console.error('Error during daily check-in:', error);
     res.status(500).json({ message: 'An error occurred while processing your check-in' });
   }
 };
-
-// **************************Shedule auto reset********************************
-
-const resetCheckInStatus = async () => {
-  try {
-    // Update all users to set checkin to false
-    await User.updateMany({}, { $set: { checkin: false } });
-    console.log('Check-in status reset for all users at midnight.');
-  } catch (error) {
-    console.error('Error resetting check-in status:', error);
-  }
-};
-
-// Schedule the reset function to run at 12:00 AM every day
-cron.schedule('0 0 * * *', resetCheckInStatus);
-
-console.log('Daily reset scheduled at midnight.');
 
 
 

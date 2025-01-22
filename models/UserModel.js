@@ -23,6 +23,10 @@ const UserSchema = new mongoose.Schema(
     checkin:{
       type:Boolean,
       default:false,
+    },
+    lastcheckin:{
+      type:Date,
+      default:null,
     }
   },
   { timestamps: true }
