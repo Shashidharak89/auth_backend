@@ -20,7 +20,6 @@ const __dirname = path.dirname(__filename);
 // Initializing Express app
 const app = express();
 
-// Serve static files from the Vite build output folder
 app.use(express.static(path.join(__dirname, 'dist')));
 
 // Enable CORS for all routes
