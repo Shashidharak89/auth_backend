@@ -157,7 +157,6 @@ const updateCoin = async (req, res) => {
 
 // *************************************CheckIn********************************************8
 
-// Daily check-in route handler
 const dailyCheckIn = async (req, res) => {
   const { email } = req.body;
 
@@ -175,34 +174,42 @@ const dailyCheckIn = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Get the current date at midnight for comparison (ignores time)
-    const currentDate = new Date().setHours(0, 0, 0, 0);
+    const currentDate = new Date().setHours(0, 0, 0, 0); // Today's date (midnight)
+    const lastCheckinDate = user.lastcheckin
+      ? new Date(user.lastcheckin).setHours(0, 0, 0, 0)
+      : null; // Last check-in date (midnight)
 
-    // If the user has not checked in before, or last check-in date is earlier than today
-    if (user.lastcheckin === null || new Date(user.lastcheckin).setHours(0, 0, 0, 0) < currentDate) {
-      // Add coins and update check-in status
-      user.coins += 100;
-      user.checkin = true;
-      user.lastcheckin = new Date();  // Update last check-in to current date
+    // If the user has already checked in today
+    if (currentDate === lastCheckinDate && user.checkin) {
+      return res.status(400).json({ message: 'You have already checked in today!' });
+    }
 
-      // Save the updated user data
+    // If it's a new day or first check-in, reset the check-in status
+    if (currentDate > lastCheckinDate || lastCheckinDate === null) {
+      user.checkin = false; // Reset check-in status for the day
+    }
+
+    // Allow the check-in
+    if (!user.checkin) {
+      user.coins += 100; // Add coins for check-in
+      user.checkin = true; // Mark check-in as complete
+      user.lastcheckin = new Date(); // Update the last check-in date
       await user.save();
 
-      // Send a success response
-      res.status(200).json({
+      return res.status(200).json({
         message: 'Check-in successful! 100 coins added.',
         coins: user.coins,
         checkin: user.checkin,
       });
-    } else {
-      return res.status(400).json({ message: 'You have already checked in today!' });
     }
 
+    return res.status(400).json({ message: 'Unable to check in. Please try again later.' });
   } catch (error) {
     console.error('Error during daily check-in:', error);
     res.status(500).json({ message: 'An error occurred while processing your check-in' });
   }
 };
+
 
 
 
