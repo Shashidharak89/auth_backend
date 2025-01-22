@@ -107,6 +107,18 @@ const verifyUser = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
+    // Get today's date at midnight
+    const currentDate = new Date().setHours(0, 0, 0, 0);
+    const lastCheckinDate = user.lastcheckin
+      ? new Date(user.lastcheckin).setHours(0, 0, 0, 0)
+      : null;
+
+    // Reset checkin to false if lastcheckin is different from today's date
+    if (lastCheckinDate === null || currentDate > lastCheckinDate) {
+      user.checkin = false; // Reset checkin
+      await user.save();    // Save changes to the database
+    }
+
     // Send user details if token is valid
     return res.status(200).json({
       message: "Token is valid",
@@ -115,9 +127,8 @@ const verifyUser = async (req, res) => {
         name: user.name,
         email: user.email,
         checkin: user.checkin,
-        createdAt:user.createdAt,
-        updatedAt:user.updatedAt,
-
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
       },
     });
   } catch (error) {
@@ -125,6 +136,7 @@ const verifyUser = async (req, res) => {
     return res.status(401).json({ message: "Invalid or expired token" });
   }
 };
+
 
 
 
