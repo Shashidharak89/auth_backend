@@ -55,6 +55,7 @@ const registerUser = async (req, res) => {
     let name = user.name;
     let createdAt = user.createdAt;
     let updatedAt = user.updatedAt;
+    let id = user._id;
     
     // Send the response
     res.status(200).json({
@@ -66,6 +67,7 @@ const registerUser = async (req, res) => {
       name,
       createdAt,
       updatedAt,
+      id,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -119,6 +121,7 @@ const loginUser = async (req, res) => {
       name: user.name,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
+      id:user._id,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -171,6 +174,7 @@ const verifyUser = async (req, res) => {
         checkin: user.checkin,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
+        id:user._id,
       },
     });
   } catch (error) {
