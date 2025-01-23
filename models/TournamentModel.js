@@ -7,6 +7,7 @@ const TournamentSchema = new mongoose.Schema(
     maxParticipants: { type: Number, required: true },
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },
+    entry:{type:Number,default:0},
     participants: [
       {
         userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
