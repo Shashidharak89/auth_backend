@@ -2,7 +2,6 @@ import User from "../models/UserModel.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import "dotenv/config.js";
-import cron from 'node-cron';
 
 /************************************ Creating JWT token ************************************/
 const createToken = (_id) => {
@@ -20,10 +19,26 @@ const registerUser = async (req, res) => {
     return res.status(400).json({ error: "All fields are required." });
   }
 
-  // Check if email already exist
+  // Check if email already exists
   const exist = await User.findOne({ email });
   if (exist) {
-    return res.status(400).json({ error: "Email is already taken" });
+    return res.status(400).json({ error: "Email is already taken." });
+  }
+
+  // Generate a unique userId
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let userId = "";
+  let isUnique = false;
+
+  while (!isUnique) {
+    userId = Array.from({ length: 10 }, () =>
+      characters.charAt(Math.floor(Math.random() * characters.length))
+    ).join("");
+    
+    const existingUser = await User.findOne({ userId });
+    if (!existingUser) {
+      isUnique = true; // Found a unique userId
+    }
   }
 
   // Hash the password
@@ -32,20 +47,31 @@ const registerUser = async (req, res) => {
 
   try {
     // Register the user
-    const user = await User.create({ email, password: hashed });
+    const user = await User.create({ email, password: hashed, userId });
     // Create the JsonWebToken
-    const token = createToken(user._id)
+    const token = createToken(user._id);
     let coins = user.coins;
     let checkin = user.checkin;
-    let name=user.name;
-    let createdAt=user.createdAt;
-    let updatedAt=user.updatedAt;
+    let name = user.name;
+    let createdAt = user.createdAt;
+    let updatedAt = user.updatedAt;
+    
     // Send the response
-    res.status(200).json({ email, token, coins, checkin,name ,createdAt,updatedAt});
+    res.status(200).json({
+      userId,
+      email,
+      token,
+      coins,
+      checkin,
+      name,
+      createdAt,
+      updatedAt,
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 /************************************ Login User ************************************/
 const loginUser = async (req, res) => {

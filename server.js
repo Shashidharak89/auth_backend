@@ -6,6 +6,7 @@ import cors from "cors";
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url'; // Import to create __dirname equivalent
+import Tournament from "./routes/tournamentRoutes.js";
 
 dotenv.config();
 
@@ -31,6 +32,7 @@ app.use(express.json());
 // Adding the API endpoints and route handlers
 app.use("/api/posts", postsRoutes);
 app.use("/api/users", usersRoutes);
+app.use("/api/tournament",Tournament);
 
 // Fallback route to serve the React app
 app.get('*', (req, res) => {

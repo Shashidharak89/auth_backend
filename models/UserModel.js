@@ -3,9 +3,14 @@ import mongoose from "mongoose";
 // Creating post schema using Mongoose Schema class
 const UserSchema = new mongoose.Schema(
   {
-    name:{
+    name: {
+      type: String,
+      default: "User",
+    },
+    userId:{
       type:String,
-      default:"User",
+      unique:true,
+      required:true,
     },
     email: {
       type: String,
@@ -16,18 +21,29 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    coins:{
-      type:Number,
-      default:200,
+    coins: {
+      type: Number,
+      default: 200,
     },
-    checkin:{
-      type:Boolean,
-      default:false,
+    checkin: {
+      type: Boolean,
+      default: false,
     },
-    lastcheckin:{
-      type:Date,
-      default:null,
-    }
+    lastcheckin: {
+      type: Date,
+      default: null,
+    },
+    tournaments: [
+      {
+        name: {
+          type: String,
+        },
+        joined: {
+          type: Boolean,
+          default: false,
+        },
+      },
+    ],
   },
   { timestamps: true }
 );
