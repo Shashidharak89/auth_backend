@@ -2,42 +2,24 @@ import mongoose from "mongoose";
 
 const TournamentSchema = new mongoose.Schema(
   {
-    name: {
-      type: String,
-      required: true,
-    },
-    pool: {
-      type: Number,
-      default: 0, // The prize pool amount
-    },
+    name: { type: String, required: true },
+    pool: { type: Number, default: 0 },
+    maxParticipants: { type: Number, required: true },
+    startDate: { type: Date, required: true },
+    endDate: { type: Date, required: true },
     participants: [
       {
-        userId: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User", // Reference to the User collection
-        },
-        joinedAt: {
-          type: Date,
-          default: Date.now,
-        },
+        userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
       },
     ],
-    maxParticipants: {
-      type: Number, // Optional limit for participants
-      default: 100, // Example limit
-    },
-    startDate: {
-      type: Date,
-      required: true,
-    },
-    endDate: {
-      type: Date,
-      required: true,
+    winner: {
+      type: mongoose.Schema.Types.ObjectId, // Reference to User ID
+      ref: "User",
+      default: null,
     },
   },
   { timestamps: true }
 );
 
 const Tournament = mongoose.model("Tournament", TournamentSchema);
-
 export default Tournament;
