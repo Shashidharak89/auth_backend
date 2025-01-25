@@ -111,3 +111,23 @@ export const announceWinner = async (req, res) => {
     res.status(500).json({ message: "Failed to announce winner.", error });
   }
 };
+
+
+// ***************************************DELETE TOURNAMENT*************************************************************************
+
+// Delete a tournament by ID
+export const deleteTournament = async (req, res) => {
+  try {
+    const { tournamentId } = req.params;
+
+    const tournament = await Tournament.findByIdAndDelete(tournamentId);
+
+    if (!tournament) {
+      return res.status(404).json({ message: "Tournament not found." });
+    }
+
+    res.status(200).json({ message: "Tournament deleted successfully.", tournament });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to delete tournament.", error });
+  }
+};

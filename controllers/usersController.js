@@ -12,10 +12,10 @@ const createToken = (_id) => {
 /************************************ Register User ************************************/
 const registerUser = async (req, res) => {
   // Grab data from request body
-  const { email, password } = req.body;
+  const { email, password, name } = req.body;
 
   // Check the fields are not empty
-  if (!email || !password) {
+  if (!email || !password || !name) {
     return res.status(400).json({ error: "All fields are required." });
   }
 
@@ -47,16 +47,15 @@ const registerUser = async (req, res) => {
 
   try {
     // Register the user
-    const user = await User.create({ email, password: hashed, userId });
+    const user = await User.create({ email, password: hashed, userId, name });
     // Create the JsonWebToken
     const token = createToken(user._id);
     let coins = user.coins;
     let checkin = user.checkin;
-    let name = user.name;
     let createdAt = user.createdAt;
     let updatedAt = user.updatedAt;
     let id = user._id;
-    
+
     // Send the response
     res.status(200).json({
       userId,
@@ -73,7 +72,6 @@ const registerUser = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
 
 /************************************ Login User ************************************/
 const loginUser = async (req, res) => {
@@ -175,6 +173,7 @@ const verifyUser = async (req, res) => {
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
         id:user._id,
+        unique_id:user.userId,
       },
     });
   } catch (error) {
@@ -182,9 +181,6 @@ const verifyUser = async (req, res) => {
     return res.status(401).json({ message: "Invalid or expired token" });
   }
 };
-
-
-
 
 const updateCoin = async (req, res) => {
   try {
@@ -269,10 +265,26 @@ const dailyCheckIn = async (req, res) => {
 };
 
 
+// ***********************Find User name of the tounament winner ************************************************************************
+
+const findUserNameOfwinner=async (req, res) => {
+  const userId = req.params.id;
+
+  try {
+    // Fetch the user from MongoDB
+    const user = await User.findById(userId).select('name userId'); // Only fetch name and userId
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Send the response
+    res.status(200).json(user);
+  } catch (error) {
+    console.error('Error fetching user:', error.message);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
 
 
 
-
-
-
-export { registerUser, loginUser, verifyUser, updateCoin, dailyCheckIn };
+export { registerUser, loginUser, verifyUser, updateCoin, dailyCheckIn ,findUserNameOfwinner};

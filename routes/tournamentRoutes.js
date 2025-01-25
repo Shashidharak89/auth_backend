@@ -5,6 +5,7 @@ import {
   getTournamentDetails,
   joinTournament,
   announceWinner,
+  deleteTournament,
 } from "../controllers/tournamentController.js";
 
 const router = express.Router();
@@ -23,5 +24,7 @@ router.post("/join/:tournamentId", joinTournament);
 
 // Route to announce winner
 router.post("/announce-winner/:tournamentId", announceWinner);
+
+router.delete("/:tournamentId", deleteTournament);
 
 export default router;
