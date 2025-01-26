@@ -18,6 +18,6 @@ router.post('/checkin',dailyCheckIn)
 
 router.get('/:id',findUserNameOfwinner);
 
-router.get('/getCoinHistory',getCoinHistory);
+router.get('/coinhistory/:id',getCoinHistory);
 
 export { router as usersRoutes }

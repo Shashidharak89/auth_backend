@@ -300,32 +300,23 @@ const findUserNameOfwinner = async (req, res) => {
 
 // ****************************************************GetHistory******************************************************************
 const getCoinHistory = async (req, res) => {
-  const { email } = req.body; // Email to identify the user
-
-  // Check if the email is provided
-  if (!email) {
-    return res.status(400).json({ message: 'Email is required' });
-  }
+  const userId = req.params.id;
 
   try {
-    // Find the user by email
-    const user = await User.findOne({ email });
-
-    // If user does not exist, return an error
+    // Fetch the user from MongoDB
+    const user = await User.findById(userId).select('coinhistory'); // Only fetch name and userId
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ error: 'User not found' });
     }
 
-    // Return the user's coin history
-    return res.status(200).json({
-      message: 'Coin history retrieved successfully',
-      coinhistory: user.coinhistory,
-    });
+    // Send the response
+    res.status(200).json(user);
   } catch (error) {
-    console.error('Error fetching coin history:', error);
-    res.status(500).json({ message: 'An error occurred while retrieving coin history' });
+    console.error('Error fetching user:', error.message);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
 
 
 export { registerUser, loginUser, verifyUser, updateCoin, dailyCheckIn, findUserNameOfwinner ,getCoinHistory};
