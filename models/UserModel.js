@@ -7,9 +7,9 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: "User",
     },
-    userId:{
-      type:String,
-      unique:true,
+    userId: {
+      type: String,
+      unique: true,
     },
     email: {
       type: String,
@@ -40,6 +40,16 @@ const UserSchema = new mongoose.Schema(
         joined: {
           type: Boolean,
           default: false,
+        },
+      },
+    ],
+    coinhistory: [
+      {
+        historyMessage: {
+          type: String,
+        },
+        coinCount: {
+          type: Number,
         },
       },
     ],

@@ -1,5 +1,5 @@
 import express from 'express'
-import { registerUser, loginUser,verifyUser,updateCoin,dailyCheckIn,findUserNameOfwinner } from '../controllers/usersController.js'
+import { registerUser, loginUser,verifyUser,updateCoin,dailyCheckIn,findUserNameOfwinner,getCoinHistory } from '../controllers/usersController.js'
 
 // Creating an instance of Express router
 const router = express.Router()
@@ -17,5 +17,7 @@ router.put('/update-coin',updateCoin)
 router.post('/checkin',dailyCheckIn)
 
 router.get('/:id',findUserNameOfwinner);
+
+router.get('/getCoinHistory',getCoinHistory);
 
 export { router as usersRoutes }

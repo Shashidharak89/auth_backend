@@ -34,7 +34,7 @@ const registerUser = async (req, res) => {
     userId = Array.from({ length: 10 }, () =>
       characters.charAt(Math.floor(Math.random() * characters.length))
     ).join("");
-    
+
     const existingUser = await User.findOne({ userId });
     if (!existingUser) {
       isUnique = true; // Found a unique userId
@@ -119,7 +119,7 @@ const loginUser = async (req, res) => {
       name: user.name,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
-      id:user._id,
+      id: user._id,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -172,8 +172,8 @@ const verifyUser = async (req, res) => {
         checkin: user.checkin,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
-        id:user._id,
-        unique_id:user.userId,
+        id: user._id,
+        unique_id: user.userId,
       },
     });
   } catch (error) {
@@ -181,19 +181,24 @@ const verifyUser = async (req, res) => {
     return res.status(401).json({ message: "Invalid or expired token" });
   }
 };
-
+// *******************************************Update Coin******************************************************************************
 const updateCoin = async (req, res) => {
   try {
-    const { email, amount } = req.body; // Email to identify user, amount to add to coins
+    const { email, historyMessage, coinCount } = req.body; // Email, historyMessage, and coinCount from request
 
-    if (!email || typeof amount !== 'number') {
-      return res.status(400).json({ error: 'Invalid email or amount' });
+    if (!email || !historyMessage || typeof coinCount !== 'number') {
+      return res.status(400).json({ error: 'Invalid email, historyMessage, or coinCount' });
     }
 
-    // Find user and update coins
+    // Find user and update both coins and coinhistory array
     const updatedUser = await User.findOneAndUpdate(
       { email },
-      { $inc: { coins: amount } }, // Increment coins by the amount
+      {
+        $inc: { coins: coinCount }, // Increment coins by the coinCount
+        $push: { // Push new history message and coin count to the coinhistory array
+          coinhistory: { historyMessage, coinCount }
+        }
+      },
       { new: true } // Return the updated document
     );
 
@@ -201,11 +206,13 @@ const updateCoin = async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    res.status(200).json({ message: 'Coins updated successfully', coins: updatedUser.coins });
+    res.status(200).json({ message: 'Coins and coin history updated successfully', coins: updatedUser.coins, coinhistory: updatedUser.coinhistory });
   } catch (error) {
     res.status(500).json({ error: 'Server error', details: error.message });
   }
 };
+
+
 
 
 
@@ -248,6 +255,12 @@ const dailyCheckIn = async (req, res) => {
       user.coins += 100; // Add coins for check-in
       user.checkin = true; // Mark check-in as complete
       user.lastcheckin = new Date(); // Update the last check-in date
+
+      // Add coin history for the check-in
+      const historyMessage = 'Daily check-in reward';
+      const coinCount = 100;
+      user.coinhistory.push({ historyMessage, coinCount });
+
       await user.save();
 
       return res.status(200).json({
@@ -267,7 +280,7 @@ const dailyCheckIn = async (req, res) => {
 
 // ***********************Find User name of the tounament winner ************************************************************************
 
-const findUserNameOfwinner=async (req, res) => {
+const findUserNameOfwinner = async (req, res) => {
   const userId = req.params.id;
 
   try {
@@ -285,6 +298,34 @@ const findUserNameOfwinner=async (req, res) => {
   }
 };
 
+// ****************************************************GetHistory******************************************************************
+const getCoinHistory = async (req, res) => {
+  const { email } = req.body; // Email to identify the user
+
+  // Check if the email is provided
+  if (!email) {
+    return res.status(400).json({ message: 'Email is required' });
+  }
+
+  try {
+    // Find the user by email
+    const user = await User.findOne({ email });
+
+    // If user does not exist, return an error
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Return the user's coin history
+    return res.status(200).json({
+      message: 'Coin history retrieved successfully',
+      coinhistory: user.coinhistory,
+    });
+  } catch (error) {
+    console.error('Error fetching coin history:', error);
+    res.status(500).json({ message: 'An error occurred while retrieving coin history' });
+  }
+};
 
 
-export { registerUser, loginUser, verifyUser, updateCoin, dailyCheckIn ,findUserNameOfwinner};
+export { registerUser, loginUser, verifyUser, updateCoin, dailyCheckIn, findUserNameOfwinner ,getCoinHistory};
