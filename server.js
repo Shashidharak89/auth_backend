@@ -8,6 +8,7 @@ import path from 'path';
 import { fileURLToPath } from 'url'; // Import to create __dirname equivalent
 import Tournament from "./routes/tournamentRoutes.js";
 import Withdrawl from './routes/withdrawlRoutes.js';
+import adminRoutes from "./routes/adminRoutes.js";
 
 dotenv.config();
 
@@ -35,6 +36,7 @@ app.use("/api/posts", postsRoutes);
 app.use("/api/users", usersRoutes);
 app.use("/api/tournament",Tournament);
 app.use("/api/withdrawl",Withdrawl);
+app.use('/api/admin',adminRoutes);
 
 // Fallback route to serve the React app
 app.get('*', (req, res) => {
