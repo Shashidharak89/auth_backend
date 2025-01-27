@@ -7,6 +7,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url'; // Import to create __dirname equivalent
 import Tournament from "./routes/tournamentRoutes.js";
+import Withdrawl from './routes/withdrawlRoutes.js';
 
 dotenv.config();
 
@@ -33,6 +34,7 @@ app.use(express.json());
 app.use("/api/posts", postsRoutes);
 app.use("/api/users", usersRoutes);
 app.use("/api/tournament",Tournament);
+app.use("/api/withdrawl",Withdrawl);
 
 // Fallback route to serve the React app
 app.get('*', (req, res) => {
