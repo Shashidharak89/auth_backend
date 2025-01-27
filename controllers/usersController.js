@@ -114,6 +114,7 @@ const loginUser = async (req, res) => {
     // Prepare the response
     res.status(200).json({
       token,
+      email:user.email,
       coins: user.coins,
       checkin: user.checkin,
       name: user.name,
